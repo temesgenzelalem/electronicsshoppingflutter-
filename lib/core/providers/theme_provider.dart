@@ -38,7 +38,7 @@ final lightTheme = ThemeData(
     foregroundColor: Colors.black,
     elevation: 0,
   ),
-  cardColor: Colors.white, // ✅ replaces cardTheme color
+  cardColor: Colors.white,
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       backgroundColor: const Color(0xFF007AFF),
@@ -59,7 +59,7 @@ final darkTheme = ThemeData(
     foregroundColor: Colors.white,
     elevation: 0,
   ),
-  cardColor: const Color(0xFF1E1E1E), // ✅ replaces cardTheme color
+  cardColor: const Color(0xFF1E1E1E),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       backgroundColor: const Color(0xFF007AFF),
