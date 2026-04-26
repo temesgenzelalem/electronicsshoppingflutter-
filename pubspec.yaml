@@ -51,7 +51,7 @@ dependencies:
   url_launcher: ^6.3.0
   share_plus: ^10.0.2
   image_picker: ^1.1.2
-  speech_to_text: ^6.6.1
+  speech_to_text: ^7.0.0
   qr_flutter: ^4.1.0
   mobile_scanner: ^5.2.3
   local_auth: ^2.3.0
