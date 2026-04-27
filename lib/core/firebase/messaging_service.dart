@@ -11,6 +11,7 @@ class MessagingService {
   final FirestoreService _firestore = FirestoreService();
 
   Future<void> initialize() async {
+    try {
     // Request permission
     await _messaging.requestPermission(
       alert: true,
@@ -40,6 +41,9 @@ class MessagingService {
 
     // Handle message opened app
     FirebaseMessaging.onMessageOpenedApp.listen(_handleMessageOpenedApp);
+    } catch (e) {
+      print('Messaging init error: $e');
+    }
   }
 
   Future<void> updateToken(String userId) async {

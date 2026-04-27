@@ -17,7 +17,11 @@ class RemoteConfigService {
       AppConstants.remoteConfigForceUpdateVersion: '1.0.0',
     });
 
-    await _remoteConfig.fetchAndActivate();
+    try {
+      await _remoteConfig.fetchAndActivate();
+    } catch (e) {
+      print('Remote config error: $e');
+    }
   }
 
   bool get flashSaleBannerVisible =>
