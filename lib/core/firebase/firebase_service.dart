@@ -35,8 +35,9 @@ class FirebaseService {
 
       _initialized = true;
     } catch (e) {
-      // Handle initialization error
-      rethrow;
+      // Log error but don't crash the app
+      print('Firebase initialization error: $e');
+      _initialized = true; // prevent infinite retry
     }
   }
 
