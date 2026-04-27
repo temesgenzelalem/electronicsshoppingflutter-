@@ -56,7 +56,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           }
         },
         loading: () {
-          // Still loading, wait
+          Future.delayed(const Duration(seconds: 2), _initializeApp);
         },
         error: (error, stack) {
           // Error, go to login

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:electromart_pro/core/firebase/firebase_service.dart';
 import 'package:electromart_pro/core/firebase/messaging_service.dart';
-import 'package:electromart_pro/core/firebase/dynamic_links_service.dart';
+
 import 'package:electromart_pro/core/firebase/remote_config_service.dart';
 import 'package:electromart_pro/core/providers/theme_provider.dart';
 import 'package:electromart_pro/features/splash/splash_screen.dart';
@@ -31,8 +31,6 @@ void main() async {
   final messagingService = MessagingService();
   await messagingService.initialize();
 
-  final dynamicLinksService = DynamicLinksService();
-  await dynamicLinksService.initialize();
 
   final remoteConfigService = RemoteConfigService();
   await remoteConfigService.initialize();
