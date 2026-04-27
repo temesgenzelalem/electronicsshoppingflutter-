@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "479553092790",
+    "project_id": "electromart-pro-e1ba0",
+    "storage_bucket": "electromart-pro-e1ba0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:479553092790:android:135fe70dd1a11538e03a17",
+        "android_client_info": {
+          "package_name": "com.example.electromart_pro"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQT9fcMsm3kPgkTnllHN2FsataHUT5PrA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
