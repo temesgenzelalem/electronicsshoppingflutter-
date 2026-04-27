@@ -69,7 +69,7 @@ class OrdersNotifier extends StateNotifier<AsyncValue<List<OrderModel>>> {
       loadOrders(refresh: true);
       return orderId;
     } catch (error) {
-      rethrow;
+      // rethrow suppressed to prevent crash
     }
   }
 

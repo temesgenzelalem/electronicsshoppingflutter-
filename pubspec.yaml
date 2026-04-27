@@ -87,6 +87,7 @@ flutter:
 
   assets:
     - assets/animations/
+    - assets/images/
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
