@@ -54,8 +54,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (!mounted) return;
       Navigator.of(context).pushReplacementNamed('/home');
     } catch (e) {
+      String errorMessage = 'Login failed';
+      if (e.toString().contains('configuration')) {
+        errorMessage = 'Firebase configuration error. Please check your setup.';
+      } else if (e.toString().contains('network')) {
+        errorMessage = 'Network error. Please check your connection.';
+      } else if (e.toString().contains('user-not-found')) {
+        errorMessage = 'No account found with this email.';
+      } else if (e.toString().contains('wrong-password')) {
+        errorMessage = 'Incorrect password.';
+      } else if (e.toString().contains('invalid-email')) {
+        errorMessage = 'Please enter a valid email address.';
+      }
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Login failed: $e')),
+        SnackBar(content: Text(errorMessage)),
       );
     } finally {
       setState(() => _isLoading = false);
@@ -75,7 +87,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           children: [
             Center(
               child: Image.asset(
-                'assets/images/onboarding2.png',
+                'assets/images/logo.png',
                 height: 140,
                 fit: BoxFit.contain,
               ),

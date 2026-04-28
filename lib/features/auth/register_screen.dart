@@ -83,8 +83,20 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       if (!mounted) return;
       Navigator.of(context).pushReplacementNamed('/home');
     } catch (e) {
+      String errorMessage = 'Registration failed';
+      if (e.toString().contains('configuration')) {
+        errorMessage = 'Firebase configuration error. Please check your setup.';
+      } else if (e.toString().contains('network')) {
+        errorMessage = 'Network error. Please check your connection.';
+      } else if (e.toString().contains('email-already-in-use')) {
+        errorMessage = 'This email is already registered.';
+      } else if (e.toString().contains('weak-password')) {
+        errorMessage = 'Password is too weak. Please use a stronger password.';
+      } else if (e.toString().contains('invalid-email')) {
+        errorMessage = 'Please enter a valid email address.';
+      }
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Registration failed: $e')),
+        SnackBar(content: Text(errorMessage)),
       );
     } finally {
       setState(() => _isLoading = false);
@@ -114,7 +126,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             const SizedBox(height: AppConstants.paddingLarge),
             Center(
               child: Image.asset(
-                'assets/images/onboarding1.png',
+                'assets/images/logo.png',
                 height: 140,
                 fit: BoxFit.contain,
               ),
