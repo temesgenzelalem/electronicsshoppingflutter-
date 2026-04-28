@@ -1,7 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:electromart_pro/core/firebase/firestore_service.dart';
 import 'package:electromart_pro/core/models/notification_model.dart';
-import 'package:electromart_pro/core/providers/banner_provider.dart';
+
+final firestoreServiceProvider =
+    Provider<FirestoreService>((ref) => FirestoreService());
 
 final notificationsProvider = StateNotifierProvider.family<
     NotificationsNotifier,
@@ -24,16 +26,8 @@ class NotificationsNotifier
   Future<void> _loadNotifications() async {
     state = const AsyncValue.loading();
     try {
-      final notificationsStream =
-          _firestoreService.getUserNotifications(_userId);
-      notificationsStream.listen(
-        (notifications) {
-          state = AsyncValue.data(notifications);
-        },
-        onError: (error) {
-          state = AsyncValue.error(error, StackTrace.current);
-        },
-      );
+      final notifications = await _firestoreService.getUserNotifications(_userId);
+      state = AsyncValue.data(notifications);
     } catch (error) {
       state = AsyncValue.error(error, StackTrace.current);
     }

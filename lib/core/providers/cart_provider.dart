@@ -6,13 +6,13 @@ final firestoreServiceProvider =
     Provider<FirestoreService>((ref) => FirestoreService());
 
 final cartProvider =
-    StateNotifierProvider.family<CartNotifier, AsyncValue<CartModel?>, String>(
+    StateNotifierProvider.family<CartNotifier, AsyncValue<List<CartItemModel>>, String>(
         (ref, userId) {
   final firestoreService = ref.watch(firestoreServiceProvider);
   return CartNotifier(firestoreService, userId);
 });
 
-class CartNotifier extends StateNotifier<AsyncValue<CartModel?>> {
+class CartNotifier extends StateNotifier<AsyncValue<List<CartItemModel>>> {
   final FirestoreService _firestoreService;
   final String _userId;
 
@@ -26,8 +26,8 @@ class CartNotifier extends StateNotifier<AsyncValue<CartModel?>> {
     try {
       final cartStream = _firestoreService.getCartStream(_userId);
       cartStream.listen(
-        (cart) {
-          state = AsyncValue.data(cart);
+        (cartItems) {
+          state = AsyncValue.data(cartItems);
         },
         onError: (error) {
           state = AsyncValue.error(error, StackTrace.current);
@@ -42,17 +42,15 @@ class CartNotifier extends StateNotifier<AsyncValue<CartModel?>> {
     try {
       await _firestoreService.addToCart(_userId, item);
       // Optimistic update
-      state.whenData((cart) {
-        if (cart != null) {
-          final existingIndex =
-              cart.items.indexWhere((i) => i.productId == item.productId);
-          if (existingIndex != -1) {
-            cart.items[existingIndex] = item;
-          } else {
-            cart.items.add(item);
-          }
-          state = AsyncValue.data(cart.copyWith(updatedAt: DateTime.now()));
+      state.whenData((cartItems) {
+        final existingIndex =
+            cartItems.indexWhere((i) => i.productId == item.productId);
+        if (existingIndex != -1) {
+          cartItems[existingIndex] = item;
+        } else {
+          cartItems.add(item);
         }
+        state = AsyncValue.data(List.from(cartItems));
       });
     } catch (error) {
       state = AsyncValue.error(error, StackTrace.current);
@@ -63,11 +61,9 @@ class CartNotifier extends StateNotifier<AsyncValue<CartModel?>> {
     try {
       await _firestoreService.removeFromCart(_userId, productId);
       // Optimistic update
-      state.whenData((cart) {
-        if (cart != null) {
-          cart.items.removeWhere((item) => item.productId == productId);
-          state = AsyncValue.data(cart.copyWith(updatedAt: DateTime.now()));
-        }
+      state.whenData((cartItems) {
+        cartItems.removeWhere((item) => item.productId == productId);
+        state = AsyncValue.data(List.from(cartItems));
       });
     } catch (error) {
       state = AsyncValue.error(error, StackTrace.current);
@@ -81,33 +77,16 @@ class CartNotifier extends StateNotifier<AsyncValue<CartModel?>> {
     }
 
     try {
-      state.whenData((cart) async {
-        if (cart != null) {
-          final itemIndex =
-              cart.items.indexWhere((item) => item.productId == productId);
-          if (itemIndex != -1) {
-            final updatedItem =
-                cart.items[itemIndex].copyWith(quantity: quantity);
-            await _firestoreService.addToCart(_userId, updatedItem);
-            cart.items[itemIndex] = updatedItem;
-            state = AsyncValue.data(cart.copyWith(updatedAt: DateTime.now()));
-          }
+      state.whenData((cartItems) async {
+        final itemIndex =
+            cartItems.indexWhere((item) => item.productId == productId);
+        if (itemIndex != -1) {
+          final updatedItem = cartItems[itemIndex].copyWith(quantity: quantity);
+          await _firestoreService.addToCart(_userId, updatedItem);
+          cartItems[itemIndex] = updatedItem;
+          state = AsyncValue.data(List.from(cartItems));
         }
       });
-    } catch (error) {
-      state = AsyncValue.error(error, StackTrace.current);
-    }
-  }
-
-  Future<void> applyCoupon(String couponCode) async {
-    try {
-      state.whenData((cart) {
-        if (cart != null) {
-          state = AsyncValue.data(
-              cart.copyWith(couponCode: couponCode, updatedAt: DateTime.now()));
-        }
-      });
-      // In a real app, validate coupon with backend
     } catch (error) {
       state = AsyncValue.error(error, StackTrace.current);
     }
@@ -115,14 +94,11 @@ class CartNotifier extends StateNotifier<AsyncValue<CartModel?>> {
 
   Future<void> clearCart() async {
     try {
-      state.whenData((cart) {
-        if (cart != null) {
-          for (final item in cart.items) {
-            _firestoreService.removeFromCart(_userId, item.productId);
-          }
-          state = AsyncValue.data(
-              cart.copyWith(items: [], updatedAt: DateTime.now()));
+      state.whenData((cartItems) {
+        for (final item in cartItems) {
+          _firestoreService.removeFromCart(_userId, item.productId);
         }
+        state = AsyncValue.data([]);
       });
     } catch (error) {
       state = AsyncValue.error(error, StackTrace.current);

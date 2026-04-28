@@ -55,17 +55,17 @@ class _CartScreenState extends ConsumerState<CartScreen> {
             ],
           ),
         ),
-        data: (cart) {
-          if (cart == null || cart.items.isEmpty) {
+        data: (cartItems) {
+          if (cartItems.isEmpty) {
             return _buildEmptyCart();
           }
-          return _buildCartContent(cart);
+          return _buildCartContent(cartItems);
         },
       ),
       bottomNavigationBar: cartAsync.maybeWhen(
-        data: (cart) {
-          if (cart == null || cart.items.isEmpty) return null;
-          return _buildBottomBar(cart);
+        data: (cartItems) {
+          if (cartItems.isEmpty) return null;
+          return _buildBottomBar(cartItems);
         },
         orElse: () => null,
       ),
@@ -102,15 +102,15 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     );
   }
 
-  Widget _buildCartContent(CartModel cart) {
+  Widget _buildCartContent(List<CartItemModel> cartItems) {
     return Column(
       children: [
         Expanded(
           child: ListView.builder(
             padding: const EdgeInsets.all(AppConstants.paddingMedium),
-            itemCount: cart.items.length,
+            itemCount: cartItems.length,
             itemBuilder: (context, index) {
-              final item = cart.items[index];
+              final item = cartItems[index];
               return _buildCartItem(item);
             },
           ),
@@ -257,7 +257,10 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     );
   }
 
-  Widget _buildBottomBar(CartModel cart) {
+  Widget _buildBottomBar(List<CartItemModel> cartItems) {
+    final subtotal = cartItems.fold<double>(0, (sum, item) => sum + item.totalPrice);
+    final totalItems = cartItems.fold<int>(0, (sum, item) => sum + item.quantity);
+
     return Container(
       padding: const EdgeInsets.all(AppConstants.paddingMedium),
       decoration: BoxDecoration(
@@ -278,11 +281,11 @@ class _CartScreenState extends ConsumerState<CartScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Subtotal (${cart.totalItems} items)',
+                'Subtotal ($totalItems items)',
                 style: AppConstants.bodyText1,
               ),
               Text(
-                '\$${cart.subtotal.toStringAsFixed(2)}',
+                '\$${subtotal.toStringAsFixed(2)}',
                 style: AppConstants.bodyText1.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -300,7 +303,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                 style: AppConstants.bodyText1,
               ),
               Text(
-                cart.subtotal >= AppConstants.freeDeliveryThreshold
+                subtotal >= AppConstants.freeDeliveryThreshold
                     ? 'Free'
                     : '\$${AppConstants.deliveryCharge.toStringAsFixed(2)}',
                 style: AppConstants.bodyText1,
@@ -318,7 +321,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                 style: AppConstants.bodyText1,
               ),
               Text(
-                '\$${(cart.subtotal * AppConstants.taxRate).toStringAsFixed(2)}',
+                '\$${(subtotal * AppConstants.taxRate).toStringAsFixed(2)}',
                 style: AppConstants.bodyText1,
               ),
             ],
@@ -335,7 +338,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                 style: AppConstants.headline2,
               ),
               Text(
-                '\$${_calculateTotal(cart).toStringAsFixed(2)}',
+                '\$${_calculateTotal(cartItems).toStringAsFixed(2)}',
                 style: AppConstants.headline2.copyWith(
                   color: AppConstants.primaryColor,
                 ),
@@ -358,12 +361,13 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     );
   }
 
-  double _calculateTotal(CartModel cart) {
-    double total = cart.subtotal;
-    if (cart.subtotal < AppConstants.freeDeliveryThreshold) {
+  double _calculateTotal(List<CartItemModel> cartItems) {
+    final subtotal = cartItems.fold<double>(0, (sum, item) => sum + item.totalPrice);
+    double total = subtotal;
+    if (subtotal < AppConstants.freeDeliveryThreshold) {
       total += AppConstants.deliveryCharge;
     }
-    total += cart.subtotal * AppConstants.taxRate;
+    total += subtotal * AppConstants.taxRate;
     return total;
   }
 

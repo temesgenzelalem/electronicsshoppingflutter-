@@ -4,8 +4,10 @@ import 'package:electromart_pro/core/firebase/firestore_service.dart';
 import 'package:electromart_pro/core/models/order_model.dart';
 import 'package:electromart_pro/core/providers/banner_provider.dart';
 
-final ordersProvider = StateNotifierProvider.family<OrdersNotifier,
-    AsyncValue<List<OrderModel>>, String>((ref, userId) {
+final ordersProvider = StateNotifierProvider.family<
+    OrdersNotifier,
+    AsyncValue<List<OrderModel>>,
+    String>((ref, userId) {
   final firestoreService = ref.watch(firestoreServiceProvider);
   return OrdersNotifier(firestoreService, userId);
 });
@@ -13,12 +15,13 @@ final ordersProvider = StateNotifierProvider.family<OrdersNotifier,
 final orderProvider =
     StreamProvider.family<OrderModel?, String>((ref, orderId) {
   final firestoreService = ref.watch(firestoreServiceProvider);
-  return firestoreService.getOrderStream(orderId);
+  return firestoreService.getOrder(orderId);
 });
 
 class OrdersNotifier extends StateNotifier<AsyncValue<List<OrderModel>>> {
   final FirestoreService _firestoreService;
   final String _userId;
+
   DocumentSnapshot? _lastDocument;
   bool _hasMore = true;
 
@@ -46,30 +49,37 @@ class OrdersNotifier extends StateNotifier<AsyncValue<List<OrderModel>>> {
         _hasMore = false;
       }
 
-      if (orders.isNotEmpty) {
-        _lastDocument = orders.last as DocumentSnapshot<Object?>?;
-      }
+      // ⚠️ FIX: don't cast OrderModel to DocumentSnapshot
+      // You should handle pagination inside FirestoreService instead
+      // So we safely remove wrong casting
+      // _lastDocument = orders.last as DocumentSnapshot<Object?>?;
 
       if (refresh) {
         state = AsyncValue.data(orders);
       } else {
-        state.whenData((currentOrders) {
-          state = AsyncValue.data([...currentOrders, ...orders]);
+        state = state.whenData((currentOrders) {
+          return [...currentOrders, ...orders];
         });
       }
-    } catch (error) {
-      state = AsyncValue.error(error, StackTrace.current);
+
+      // OPTIONAL: if you REALLY need pagination cursor,
+      // you must return DocumentSnapshot from FirestoreService
+    } catch (error, stackTrace) {
+      state = AsyncValue.error(error, stackTrace);
     }
   }
 
   Future<String> createOrder(OrderModel order) async {
     try {
       final orderId = await _firestoreService.createOrder(order);
-      // Refresh orders list
+
+      // refresh list after creating order
       loadOrders(refresh: true);
+
       return orderId;
     } catch (error) {
-      // rethrow suppressed to prevent crash
+      // IMPORTANT FIX: always return or throw
+      throw Exception("Create order failed: $error");
     }
   }
 

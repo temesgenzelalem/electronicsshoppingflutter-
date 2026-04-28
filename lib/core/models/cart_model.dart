@@ -82,6 +82,11 @@ class CartItemModel {
 
   Map<String, dynamic> toJson() => _$CartItemModelToJson(this);
 
+  factory CartItemModel.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    return CartItemModel.fromJson(data);
+  }
+
   Map<String, dynamic> toFirestore() => toJson();
 
   CartItemModel copyWith({

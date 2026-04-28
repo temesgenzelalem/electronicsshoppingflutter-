@@ -47,11 +47,11 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'your-api-key',
-    appId: 'your-app-id',
-    messagingSenderId: 'your-sender-id',
-    projectId: 'your-project-id',
-    storageBucket: 'your-storage-bucket',
+    apiKey: 'AIzaSyAQT9fcMsm3kPgkTnllHN2FsataHUT5PrA',
+    appId: '1:479553092790:android:135fe70dd1a11538e03a17',
+    messagingSenderId: '479553092790',
+    projectId: 'electromart-pro-e1ba0',
+    storageBucket: 'electromart-pro-e1ba0.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(

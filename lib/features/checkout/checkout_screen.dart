@@ -47,17 +47,17 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       body: cartAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(child: Text('Error: $error')),
-        data: (cart) {
-          if (cart == null || cart.items.isEmpty) {
+        data: (cartItems) {
+          if (cartItems.isEmpty) {
             return const Center(child: Text('Cart is empty'));
           }
-          return _buildCheckoutContent(cart);
+          return _buildCheckoutContent(cartItems);
         },
       ),
     );
   }
 
-  Widget _buildCheckoutContent(CartModel cart) {
+  Widget _buildCheckoutContent(List<CartItemModel> cartItems) {
     return Stepper(
       currentStep: _currentStep,
       onStepContinue: _onStepContinue,
@@ -76,7 +76,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         ),
         Step(
           title: const Text('Order Summary'),
-          content: _buildSummaryStep(cart),
+          content: _buildSummaryStep(cartItems),
           isActive: _currentStep >= 2,
         ),
       ],
@@ -128,8 +128,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     );
   }
 
-  Widget _buildSummaryStep(CartModel cart) {
-    final subtotal = cart.subtotal;
+  Widget _buildSummaryStep(List<CartItemModel> cartItems) {
+    final subtotal = cartItems.fold<double>(0, (sum, item) => sum + item.totalPrice);
     final deliveryCharge = subtotal >= AppConstants.freeDeliveryThreshold
         ? 0.0
         : AppConstants.deliveryCharge;
@@ -172,7 +172,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           style: AppConstants.headline2,
         ),
         const SizedBox(height: AppConstants.paddingSmall),
-        ...cart.items.map((item) => ListTile(
+        ...cartItems.map((item) => ListTile(
               title: Text(item.productName),
               subtitle: Text('Qty: ${item.quantity}'),
               trailing: Text(
@@ -194,7 +194,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
-            onPressed: _isProcessing ? null : () => _placeOrder(cart, total),
+            onPressed: _isProcessing ? null : () => _placeOrder(cartItems, total),
             child: _isProcessing
                 ? const CircularProgressIndicator()
                 : const Text('Place Order'),
@@ -246,7 +246,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     );
   }
 
-  Future<void> _placeOrder(CartModel cart, double total) async {
+  Future<void> _placeOrder(List<CartItemModel> cartItems, double total) async {
     if (_selectedAddress == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please select a delivery address')),
@@ -270,7 +270,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       // TODO: Navigate to order success screen
 
       // Log purchase event
-      final items = cart.items.map((item) {
+      final items = cartItems.map((item) {
         return AnalyticsEventItem(
           itemId: item.productId,
           itemName: item.productName,
