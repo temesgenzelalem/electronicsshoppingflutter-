@@ -258,8 +258,10 @@ class _CartScreenState extends ConsumerState<CartScreen> {
   }
 
   Widget _buildBottomBar(List<CartItemModel> cartItems) {
-    final subtotal = cartItems.fold<double>(0, (sum, item) => sum + item.totalPrice);
-    final totalItems = cartItems.fold<int>(0, (sum, item) => sum + item.quantity);
+    final subtotal =
+        cartItems.fold<double>(0, (sum, item) => sum + item.totalPrice);
+    final totalItems =
+        cartItems.fold<int>(0, (sum, item) => sum + item.quantity);
 
     return Container(
       padding: const EdgeInsets.all(AppConstants.paddingMedium),
@@ -362,7 +364,8 @@ class _CartScreenState extends ConsumerState<CartScreen> {
   }
 
   double _calculateTotal(List<CartItemModel> cartItems) {
-    final subtotal = cartItems.fold<double>(0, (sum, item) => sum + item.totalPrice);
+    final subtotal =
+        cartItems.fold<double>(0, (sum, item) => sum + item.totalPrice);
     double total = subtotal;
     if (subtotal < AppConstants.freeDeliveryThreshold) {
       total += AppConstants.deliveryCharge;

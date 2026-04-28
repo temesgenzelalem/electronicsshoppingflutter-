@@ -5,9 +5,8 @@ import 'package:electromart_pro/core/models/cart_model.dart';
 final firestoreServiceProvider =
     Provider<FirestoreService>((ref) => FirestoreService());
 
-final cartProvider =
-    StateNotifierProvider.family<CartNotifier, AsyncValue<List<CartItemModel>>, String>(
-        (ref, userId) {
+final cartProvider = StateNotifierProvider.family<CartNotifier,
+    AsyncValue<List<CartItemModel>>, String>((ref, userId) {
   final firestoreService = ref.watch(firestoreServiceProvider);
   return CartNotifier(firestoreService, userId);
 });

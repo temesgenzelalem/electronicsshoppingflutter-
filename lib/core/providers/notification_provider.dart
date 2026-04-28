@@ -26,7 +26,8 @@ class NotificationsNotifier
   Future<void> _loadNotifications() async {
     state = const AsyncValue.loading();
     try {
-      final notifications = await _firestoreService.getUserNotifications(_userId);
+      final notifications =
+          await _firestoreService.getUserNotifications(_userId);
       state = AsyncValue.data(notifications);
     } catch (error) {
       state = AsyncValue.error(error, StackTrace.current);

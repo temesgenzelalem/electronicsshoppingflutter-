@@ -129,7 +129,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   }
 
   Widget _buildSummaryStep(List<CartItemModel> cartItems) {
-    final subtotal = cartItems.fold<double>(0, (sum, item) => sum + item.totalPrice);
+    final subtotal =
+        cartItems.fold<double>(0, (sum, item) => sum + item.totalPrice);
     final deliveryCharge = subtotal >= AppConstants.freeDeliveryThreshold
         ? 0.0
         : AppConstants.deliveryCharge;
@@ -194,7 +195,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
-            onPressed: _isProcessing ? null : () => _placeOrder(cartItems, total),
+            onPressed:
+                _isProcessing ? null : () => _placeOrder(cartItems, total),
             child: _isProcessing
                 ? const CircularProgressIndicator()
                 : const Text('Place Order'),
@@ -278,7 +280,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           quantity: item.quantity,
         );
       }).toList();
-      final transactionId = DateTime.now().millisecondsSinceEpoch.toString(); // TODO: Use actual order ID
+      final transactionId = DateTime.now()
+          .millisecondsSinceEpoch
+          .toString(); // TODO: Use actual order ID
       await ref.read(analyticsServiceProvider).logPurchase(
             transactionId,
             total,

@@ -4,10 +4,8 @@ import 'package:electromart_pro/core/firebase/firestore_service.dart';
 import 'package:electromart_pro/core/models/order_model.dart';
 import 'package:electromart_pro/core/providers/banner_provider.dart';
 
-final ordersProvider = StateNotifierProvider.family<
-    OrdersNotifier,
-    AsyncValue<List<OrderModel>>,
-    String>((ref, userId) {
+final ordersProvider = StateNotifierProvider.family<OrdersNotifier,
+    AsyncValue<List<OrderModel>>, String>((ref, userId) {
   final firestoreService = ref.watch(firestoreServiceProvider);
   return OrdersNotifier(firestoreService, userId);
 });

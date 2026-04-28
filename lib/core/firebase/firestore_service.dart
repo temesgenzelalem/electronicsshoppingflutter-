@@ -27,7 +27,8 @@ class FirestoreService {
     return UserModel.fromFirestore(doc);
   }
 
-  Future<void> updateUserProfile(String userId, Map<String, dynamic> data) async {
+  Future<void> updateUserProfile(
+      String userId, Map<String, dynamic> data) async {
     await _firestore
         .collection(FirebaseConstants.users)
         .doc(userId)
@@ -57,7 +58,8 @@ class FirestoreService {
     DocumentSnapshot? startAfter,
     int limit = 20,
   }) async {
-    Query query = _firestore.collection(FirebaseConstants.products).limit(limit);
+    Query query =
+        _firestore.collection(FirebaseConstants.products).limit(limit);
 
     if (categoryId != null) {
       query = query.where('categoryId', isEqualTo: categoryId);
@@ -65,8 +67,9 @@ class FirestoreService {
 
     if (searchQuery != null && searchQuery.isNotEmpty) {
       // Note: This is a simple search, for full-text search you'd need Algolia or similar
-      query = query.where('name', isGreaterThanOrEqualTo: searchQuery)
-                   .where('name', isLessThan: searchQuery + '\uf8ff');
+      query = query
+          .where('name', isGreaterThanOrEqualTo: searchQuery)
+          .where('name', isLessThan: searchQuery + '\uf8ff');
     }
 
     // Add other filters if needed, but Firestore has limitations on multiple where clauses
@@ -108,11 +111,16 @@ class FirestoreService {
   }
 
   Stream<OrderModel?> getOrder(String orderId) {
-    return _firestore.collection(FirebaseConstants.orders).doc(orderId).snapshots().map((doc) {
+    return _firestore
+        .collection(FirebaseConstants.orders)
+        .doc(orderId)
+        .snapshots()
+        .map((doc) {
       if (!doc.exists) return null;
       return OrderModel.fromFirestore(doc);
     });
   }
+
   Future<List<BannerModel>> getActiveBanners() async {
     final snapshot = await _firestore
         .collection(FirebaseConstants.banners)
@@ -121,13 +129,15 @@ class FirestoreService {
         .get();
     return snapshot.docs.map((e) => BannerModel.fromFirestore(e)).toList();
   }
+
   Stream<List<CartItemModel>> getCartStream(String userId) {
     return _firestore
         .collection(FirebaseConstants.carts)
         .doc(userId)
         .collection(FirebaseConstants.items)
         .snapshots()
-        .map((snap) => snap.docs.map((e) => CartItemModel.fromFirestore(e)).toList());
+        .map((snap) =>
+            snap.docs.map((e) => CartItemModel.fromFirestore(e)).toList());
   }
 
   Future<void> addToCart(String userId, CartItemModel item) async {
@@ -147,6 +157,7 @@ class FirestoreService {
         .doc(productId)
         .delete();
   }
+
   Future<String> createOrder(OrderModel order) async {
     final ref = _firestore.collection(FirebaseConstants.orders).doc();
     final newOrder = order.copyWith(id: ref.id);
@@ -179,7 +190,8 @@ class FirestoreService {
         .where('userId', isEqualTo: userId)
         .orderBy('orderDate', descending: true)
         .snapshots()
-        .map((snap) => snap.docs.map((e) => OrderModel.fromFirestore(e)).toList());
+        .map((snap) =>
+            snap.docs.map((e) => OrderModel.fromFirestore(e)).toList());
   }
 
   // NOTIFICATIONS
@@ -190,7 +202,9 @@ class FirestoreService {
         .collection(FirebaseConstants.notificationsSub)
         .orderBy('timestamp', descending: true)
         .get();
-    return snapshot.docs.map((e) => NotificationModel.fromFirestore(e)).toList();
+    return snapshot.docs
+        .map((e) => NotificationModel.fromFirestore(e))
+        .toList();
   }
 
   Future<void> markNotificationAsRead(
