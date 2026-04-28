@@ -51,7 +51,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       // Log login event
       await ref.read(analyticsServiceProvider).logLogin('email');
 
-      // Navigation will be handled by auth state listener
+      if (!mounted) return;
+      Navigator.of(context).pushReplacementNamed('/home');
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Login failed: $e')),
@@ -72,6 +73,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Center(
+              child: Image.asset(
+                'assets/images/onboarding2.png',
+                height: 140,
+                fit: BoxFit.contain,
+              ),
+            ),
+            const SizedBox(height: AppConstants.paddingLarge),
             TextField(
               controller: _emailController,
               decoration: const InputDecoration(
@@ -101,7 +110,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ),
             TextButton(
               onPressed: () {
-                // TODO: Navigate to register screen
+                Navigator.of(context).pushReplacementNamed('/register');
               },
               child: const Text('Don\'t have an account? Register'),
             ),

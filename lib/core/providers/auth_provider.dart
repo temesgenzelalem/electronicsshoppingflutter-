@@ -42,11 +42,16 @@ class AuthNotifier extends StateNotifier<UserModel?> {
     state = user;
   }
 
-  Future<void> createUserWithEmailAndPassword(
-      String email, String password) async {
-    final user =
-        await _authService.createUserWithEmailAndPassword(email, password);
+  Future<UserModel?> createUserWithEmailAndPassword(
+      String email, String password,
+      {String? displayName}) async {
+    final user = await _authService.createUserWithEmailAndPassword(
+      email,
+      password,
+      displayName: displayName,
+    );
     state = user;
+    return user;
   }
 
   Future<void> signInWithGoogle() async {

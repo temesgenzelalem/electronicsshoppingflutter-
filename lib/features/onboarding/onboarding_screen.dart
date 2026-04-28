@@ -15,17 +15,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final List<Map<String, String>> _onboardingData = [
     {
       'title': 'Welcome to ElectroMart',
-      'description': 'Discover the latest electronics and gadgets at unbeatable prices.',
-      'image': 'assets/images/onboarding1.png', // You'll need to add these images
+      'description':
+          'Discover the latest electronics and gadgets at unbeatable prices.',
+      'image':
+          'assets/images/onboarding1.png', // You'll need to add these images
     },
     {
       'title': 'Quality Products',
-      'description': 'Shop from trusted brands with warranty and quality assurance.',
+      'description':
+          'Shop from trusted brands with warranty and quality assurance.',
       'image': 'assets/images/onboarding2.png',
     },
     {
       'title': 'Fast Delivery',
-      'description': 'Get your orders delivered quickly and securely to your doorstep.',
+      'description':
+          'Get your orders delivered quickly and securely to your doorstep.',
       'image': 'assets/images/onboarding3.png',
     },
   ];
@@ -85,12 +89,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Placeholder for image
-          Container(
-            height: 200,
-            width: 200,
-            color: Colors.grey[300],
-            child: const Icon(Icons.image, size: 50),
+          Image.asset(
+            data['image']!,
+            height: 220,
+            fit: BoxFit.contain,
           ),
           const SizedBox(height: AppConstants.paddingLarge),
           Text(
@@ -126,7 +128,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: _nextPage,
-              child: Text(_currentPage == _onboardingData.length - 1 ? 'Get Started' : 'Next'),
+              child: Text(_currentPage == _onboardingData.length - 1
+                  ? 'Get Started'
+                  : 'Next'),
             ),
           ),
           TextButton(

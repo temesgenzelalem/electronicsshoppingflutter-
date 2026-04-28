@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:electromart_pro/core/constants/app_constants.dart';
+import 'package:electromart_pro/core/firebase/firestore_service.dart';
 import 'package:electromart_pro/core/providers/auth_provider.dart';
 import 'package:electromart_pro/core/providers/analytics_provider.dart';
 
@@ -64,23 +65,23 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     setState(() => _isLoading = true);
 
     try {
-      await ref
+      final createdUser = await ref
           .read(currentUserProvider.notifier)
           .createUserWithEmailAndPassword(
             _emailController.text.trim(),
             _passwordController.text.trim(),
+            displayName: _nameController.text.trim(),
           );
 
       // Log signup event
       await ref.read(analyticsServiceProvider).logSignUp('email');
 
-      // Create user profile in Firestore
-      final user = ref.read(currentUserProvider);
-      if (user != null) {
-        // TODO: Create user profile with name
+      if (createdUser != null) {
+        await FirestoreService().createUserProfile(createdUser);
       }
 
-      // Navigation will be handled by auth state listener
+      if (!mounted) return;
+      Navigator.of(context).pushReplacementNamed('/home');
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Registration failed: $e')),
@@ -109,6 +110,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             const Text(
               'Create your account to start shopping',
               style: AppConstants.bodyText2,
+            ),
+            const SizedBox(height: AppConstants.paddingLarge),
+            Center(
+              child: Image.asset(
+                'assets/images/onboarding1.png',
+                height: 140,
+                fit: BoxFit.contain,
+              ),
             ),
             const SizedBox(height: AppConstants.paddingLarge),
             TextField(
